@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace api_terrawind.Controllers
+namespace api_terrawind.Presetation.Controllers
 {
     [ApiController]
     [Route("[controller]")]

@@ -1,10 +1,9 @@
-﻿using api_terrawind.Context;
-using api_terrawind.Models;
-using Microsoft.AspNetCore.Http;
+﻿using api_terrawind.Core.Entities;
+using api_terrawind.Infraestructure.Persistence.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace api_terrawind.Controllers
+namespace api_terrawind.Presetation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

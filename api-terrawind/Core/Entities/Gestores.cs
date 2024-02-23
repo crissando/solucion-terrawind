@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace api_terrawind.Models
+namespace api_terrawind.Core.Entities
 {
     public class Gestores
     {

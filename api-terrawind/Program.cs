@@ -1,5 +1,9 @@
-using api_terrawind.Context;
+using api_terrawind.Infraestructure.Interfaces;
+using api_terrawind.Infraestructure.Persistence.Context;
+using api_terrawind.Application.Interfaces;
+using api_terrawind.Application.UseCases;
 using Microsoft.EntityFrameworkCore;
+using api_terrawind.Infraestructure.ExternalServices;
 
 
 
@@ -16,6 +20,13 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Conexion")));
+builder.Services.AddHttpClient();
+
+//Infraestructure
+builder.Services.AddScoped<ICryptoCurrencyRepository, CryptoCurrencyRepository>();
+
+//Aplication
+builder.Services.AddScoped<IGetCryptoCurrenciesUseCase, GetCryptoCurrenciesUseCase>();
 
 var app = builder.Build();
 
