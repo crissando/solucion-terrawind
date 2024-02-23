@@ -25,6 +25,40 @@ namespace test_api_terrawind
             Assert.Equal(3, model.Count);
 
         }
+        [Fact]
+        public async Task Get_ReturnsEmptyList_WhenNoCryptoCurrenciesAreAvailable()
+        {
+            // Arrange
+            var mockUseCase = new Mock<IGetCryptoCurrenciesUseCase>();
+            mockUseCase.Setup(useCase => useCase.Execute()).ReturnsAsync(new List<CryptoCurrency>());
+            var controller = new CryptoCurrencyController(mockUseCase.Object);
+
+            // Act
+            var result = await controller.GetCryptoCurrencies();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var model = Assert.IsType<List<CryptoCurrency>>(okResult.Value);
+            Assert.Empty(model);
+        }
+
+        [Fact]
+        public async Task Get_ReturnsInternalServerError_WhenExceptionIsThrown()
+        {
+            // Arrange
+            var mockUseCase = new Mock<IGetCryptoCurrenciesUseCase>();
+            mockUseCase.Setup(useCase => useCase.Execute()).ThrowsAsync(new Exception());
+            var controller = new CryptoCurrencyController(mockUseCase.Object);
+
+            // Act
+            var result = await controller.GetCryptoCurrencies();
+
+            // Assert
+            Assert.IsType<StatusCodeResult>(result);
+            var statusCodeResult = result as StatusCodeResult;
+            Assert.Equal(500, statusCodeResult.StatusCode);
+        }
+
 
         private List<CryptoCurrency> GetTestCryptoCurrencies()
         {

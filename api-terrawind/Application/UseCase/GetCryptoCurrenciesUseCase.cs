@@ -20,13 +20,15 @@ namespace api_terrawind.Application.UseCases
             try
             {
                 var cryptoCurrencies = await _cryptoCurrencyRepository.GetCryptoCurrencies();
+                if (cryptoCurrencies == null || !cryptoCurrencies.Any())
+                {
+                    throw new ApplicationException("No cryptocurrencies found.");
+                }
                 return cryptoCurrencies;
             }
             catch (Exception ex)
             {
-                // Aquí puedes manejar errores, como logging o lanzar una excepción personalizada.
-                // En este ejemplo, simplemente relanzamos la excepción.
-                throw ex;
+                throw new ApplicationException(ex.Message);
             }
         }
     }

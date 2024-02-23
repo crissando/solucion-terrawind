@@ -17,7 +17,18 @@ public class CryptoCurrencyController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCryptoCurrencies()
     {
-        var cryptoCurrencies = await _getCryptoCurrenciesUseCase.Execute();
-        return Ok(cryptoCurrencies);
+        try
+        {
+            var cryptoCurrencies = await _getCryptoCurrenciesUseCase.Execute();
+            return Ok(cryptoCurrencies);
+        }
+        catch (ApplicationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
 }
