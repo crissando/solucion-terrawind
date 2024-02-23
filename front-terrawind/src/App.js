@@ -1,12 +1,12 @@
-//import logo from './logo.svg';
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
+const baseUrl = "https://localhost:44339/api/gestores";
+
 function App() {
-  const baseUrl = "https://localhost:44339/api/gestores";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
@@ -18,92 +18,93 @@ function App() {
     desarrollador: ''
   });
 
-  const handleChange = e => { //Función para manejar los cambios en los inputs  
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setGestorSeleccionado({
-      ...gestorSeleccionado,
-      [name]: value
-    });
-    console.log(gestorSeleccionado);
-  }
+    // Actualiza el estado de gestorSeleccionado manteniendo el contenido anterior y actualizando el campo modificado
+    setGestorSeleccionado((prevGestor) => ({
+      ...prevGestor,
+      [name]: value,
+    }));
+  };
 
-  const abrirCerrarModalInsertar = () => {
-    setModalInsertar(!modalInsertar);
-  }
+  const toggleModalInsertar = () => setModalInsertar(!modalInsertar);
+  const toggleModalEditar = () => setModalEditar(!modalEditar);
+  const toggleModalEliminar = () => setModalEliminar(!modalEliminar);
 
-  const abrirCerrarModalEditar = () => {
-    setModalEditar(!modalEditar);
-  }
+  // Manejo de la solicitud POST para agregar un nuevo gestor
+  const handlePostRequest = async () => {
+    try {
+      const response = await axios.post(baseUrl, gestorSeleccionado);
+      // Actualiza el estado de data agregando el nuevo gestor
+      setData((prevData) => [...prevData, response.data]);
+      toggleModalInsertar();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const abrirCerrarModalEliminar = () => {
-    setModalEliminar(!modalEliminar);
-  }
-  const peticionPost = async () => {
-    delete gestorSeleccionado.id;
-    gestorSeleccionado.lanzamiento = parseInt(gestorSeleccionado.lanzamiento);
-    await axios.post(baseUrl, gestorSeleccionado)
-      .then(response => {
-        setData(data.concat(response.data));
-        abrirCerrarModalInsertar();
-      }).catch(error => {
-        console.log(error);
-      })
-  }
+  // Manejo de la solicitud PUT para editar un gestor existente
+  const handlePutRequest = async () => {
+    try {
+      await axios.put(`${baseUrl}/${gestorSeleccionado.id}`, gestorSeleccionado);
+      // Actualiza el estado de data reemplazando el gestor editado
+      setData((prevData) =>
+        prevData.map((gestor) =>
+          gestor.id === gestorSeleccionado.id ? { ...gestorSeleccionado } : gestor
+        )
+      );
+      toggleModalEditar();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const peticionPut = async () => {
-    gestorSeleccionado.lanzamiento = parseInt(gestorSeleccionado.lanzamiento);
-    await axios.put(baseUrl + '/' + gestorSeleccionado.id, gestorSeleccionado)
-      .then(response => {
-        var respuesta = response.data;
-        var dataAuxiliar = data;
-        data.map(gestor => {
-          if (gestorSeleccionado.id === gestor.id) {
-            gestor.nombre = respuesta.nombre;
-            gestor.lanzamiento = respuesta.lanzamiento;
-            gestor.desarrollador = respuesta.desarrollador;
-          }
-        })
-        abrirCerrarModalEditar();
-      }).catch(error => {
-        console.log(error);
-      })
-  }
+  // Manejo de la solicitud DELETE para eliminar un gestor
+  const handleDeleteRequest = async () => {
+    try {
+      await axios.delete(`${baseUrl}/${gestorSeleccionado.id}`);
+      // Actualiza el estado de data filtrando el gestor eliminado
+      setData((prevData) => prevData.filter((gestor) => gestor.id !== gestorSeleccionado.id));
+      toggleModalEliminar();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const peticionGet = async () => {
-    await axios.get(baseUrl)
-      .then(response => {
-        setData(response.data);
-      }).catch(error => {
-        console.log(error);
-      })
-  }
-
-  const peticionDelete = async () => {
-    await axios.delete(baseUrl+"/"+gestorSeleccionado.id)
-      .then(response => {
-        setData(data.filter(gestor => gestor.id !== gestorSeleccionado.id));
-        abrirCerrarModalEliminar();
-      }).catch(error => {
-        console.log(error);
-      })
-  }
-
-  const seleccionarGestor = (gestor, caso) => {
+  // Función para seleccionar un gestor y abrir el modal correspondiente
+  const selectGestor = (gestor, action) => {
     setGestorSeleccionado(gestor);
-    (caso === "Editar") && abrirCerrarModalEditar();
-    (caso === "Eliminar") && abrirCerrarModalEliminar();
-  }
+    action === "Editar" && toggleModalEditar();
+    action === "Eliminar" && toggleModalEliminar();
+  };
 
+  // Función para abrir el modal de edición y actualizar los datos del gestor seleccionado
+  const handleModalEditarOpen = () => {
+    setGestorSeleccionado((prevGestor) => ({ ...prevGestor, ...data.find((g) => g.id === prevGestor.id) }));
+    toggleModalEditar();
+  };
+
+  // useEffect para cargar los datos iniciales al renderizar el componente
   useEffect(() => {
-    peticionGet();
-  }, [])
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(baseUrl);
+        // Actualiza el estado de data con los datos obtenidos de la API
+        setData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="App">
-      <br></br>
-      <button onClick={() => abrirCerrarModalInsertar()} className='btn btn-success'>Insertar nuevo registro</button>
-      <br></br>
-      <br></br>
+      <br />
+      {/* Botón para abrir el modal de inserción */}
+      <button onClick={toggleModalInsertar} className='btn btn-success'>Insertar nuevo registro</button>
+      <br /><br />
+      {/* Tabla para mostrar los gestores */}
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -115,86 +116,68 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {data.map(gestor => (
+          {/* Mapeo de los datos para renderizar las filas de la tabla */}
+          {data.map((gestor) => (
             <tr key={gestor.id}>
               <td>{gestor.id}</td>
               <td>{gestor.nombre}</td>
               <td>{gestor.lanzamiento}</td>
               <td>{gestor.desarrollador}</td>
               <td>
-                <button className="btn btn-primary" onClick={() => seleccionarGestor(gestor, "Editar")}>Editar</button> {" "}
-                <button className="btn btn-danger" onClick={() => seleccionarGestor(gestor, "Eliminar")}>Eliminar</button>
+                {/* Botones para editar y eliminar un gestor */}
+                <button className="btn btn-primary" onClick={() => selectGestor(gestor, "Editar")}>Editar</button>{" "}
+                <button className="btn btn-danger" onClick={() => selectGestor(gestor, "Eliminar")}>Eliminar</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
+      {/* Modal para insertar un nuevo gestor */}
       <Modal isOpen={modalInsertar}>
         <ModalHeader>Insertar Registro</ModalHeader>
         <ModalBody>
           <div className="form-group">
-            <label>Nombre:</label>
-            <br />
-            <input type="text" className="form-control" name="nombre" onChange={handleChange} />
-            <br />
-            <label>Lanzamiento:</label>
-            <br />
-            <input type="text" className="form-control" name="lanzamiento" onChange={handleChange} />
-            <br />
-            <label>Desarrollador:</label>
-            <br />
-            <input type="text" className="form-control" name="desarrollador" onChange={handleChange} />
-            <br />
+            {/* Campos de entrada para insertar un nuevo gestor */}
           </div>
         </ModalBody>
         <ModalFooter>
-          <button className="btn btn-primary" onClick={() => peticionPost()}>Insertar</button>{" "}
-          <button className="btn btn-danger" onClick={() => abrirCerrarModalInsertar()}>Cancelar</button>
+          {/* Botones para confirmar o cancelar la inserción */}
+          <button className="btn btn-primary" onClick={handlePostRequest}>Insertar</button>{" "}
+          <button className="btn btn-danger" onClick={toggleModalInsertar}>Cancelar</button>
         </ModalFooter>
       </Modal>
 
+      {/* Modal para editar un gestor */}
       <Modal isOpen={modalEditar}>
         <ModalHeader>Editar Registro</ModalHeader>
         <ModalBody>
           <div className="form-group">
-            <label>Id:</label>
-            <br />
-            <input type="text" className="form-control" name="id" value={gestorSeleccionado && gestorSeleccionado.id} />
-            <br />
-            <label>Nombre:</label>
-            <br />
-            <input type="text" className="form-control" name="nombre" onChange={handleChange} value={gestorSeleccionado && gestorSeleccionado.nombre} />
-            <br />
-            <label>Lanzamiento:</label>
-            <br />
-            <input type="text" className="form-control" name="lanzamiento" onChange={handleChange} value={gestorSeleccionado && gestorSeleccionado.lanzamiento} />
-            <br />
-            <label>Desarrollador:</label>
-            <br />
-            <input type="text" className="form-control" name="desarrollador" onChange={handleChange} value={gestorSeleccionado && gestorSeleccionado.desarrollador} />
-            <br />
+            {/* Campos de entrada para editar un gestor */}
           </div>
         </ModalBody>
         <ModalFooter>
-          <button className="btn btn-primary" onClick={() => peticionPut()}>Editar</button>{" "}
-          <button className="btn btn-danger" onClick={() => abrirCerrarModalEditar()}>Cancelar</button>
+          {/* Botones para confirmar o cancelar la edición */}
+          <button className="btn btn-primary" onClick={handlePutRequest}>Editar</button>{" "}
+          <button className="btn btn-danger" onClick={toggleModalEditar}>Cancelar</button>
         </ModalFooter>
       </Modal>
 
+      {/* Modal para confirmar la eliminación de un gestor */}
       <Modal isOpen={modalEliminar}>
         <ModalBody>
           <div>
-            <h3>¿Estás seguro que deseas eliminar el registro?{gestorSeleccionado && gestorSeleccionado.id}</h3>
+            {/* Mensaje de confirmación de eliminación */}
+            <h3>{`¿Estás seguro que deseas eliminar el registro ${gestorSeleccionado.id}?`}</h3>
           </div>
         </ModalBody>
         <ModalFooter>
-          <button className="btn btn-danger" onClick={()=>peticionDelete()}>Sí</button>{" "}
-          <button className="btn btn-secondary" onClick={() => abrirCerrarModalEliminar()}>No</button>
+          {/* Botones para confirmar o cancelar la eliminación */}
+          
+          <button className="btn btn-danger" onClick={handleDeleteRequest}>Sí</button>{" "}
+          <button className="btn btn-secondary" onClick={toggleModalEliminar}>No</button>
         </ModalFooter>
       </Modal>
-
-
     </div>
   );
 }
