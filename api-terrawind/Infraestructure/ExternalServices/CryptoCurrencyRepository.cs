@@ -9,15 +9,17 @@ namespace api_terrawind.Infraestructure.ExternalServices
     public class CryptoCurrencyRepository : ICryptoCurrencyRepository
     {
         private readonly HttpClient _httpClient;
+        private readonly string _apiUrl;
 
-        public CryptoCurrencyRepository(HttpClient httpClient)
+        public CryptoCurrencyRepository(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _apiUrl = configuration["ExternalServices:CryptoCurrencyApi"];
         }
 
         public async Task<IEnumerable<CryptoCurrency>> GetCryptoCurrencies()
         {
-            var response = await _httpClient.GetStringAsync("https://api.coinlore.net/api/tickers/");
+            var response = await _httpClient.GetStringAsync(_apiUrl);
             var cryptoCurrencies = JsonConvert.DeserializeObject<CryptoCurrencyResponse>(response);
             return cryptoCurrencies.Data;
         }
