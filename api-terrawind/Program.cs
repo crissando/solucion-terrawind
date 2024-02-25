@@ -5,16 +5,13 @@ using api_terrawind.Application.UseCases;
 using Microsoft.EntityFrameworkCore;
 using api_terrawind.Infraestructure.ExternalServices;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder => builder
-    .WithOrigins("http://localhost:3000")
+    .WithOrigins("http://localhost:3000", "http://localhost:5173")
     .AllowAnyMethod()
     .AllowAnyHeader());
 });
@@ -32,7 +29,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
 

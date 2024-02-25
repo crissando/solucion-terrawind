@@ -4,6 +4,6 @@ namespace api_terrawind.Application.Interfaces
 {
     public interface IGetCryptoCurrenciesUseCase
     {
-        Task<IEnumerable<CryptoCurrency>> Execute();
+        Task<CryptoCurrencyResponse> Execute();
     }
 }

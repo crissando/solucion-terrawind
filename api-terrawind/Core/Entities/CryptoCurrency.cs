@@ -1,5 +1,16 @@
 ﻿namespace api_terrawind.Core.Entities
 {
+    public partial class CryptoCurrencyResponse
+    {
+        public List<CryptoCurrency> data { get; set; }
+        public Info info { get; set; }
+    }
+
+    public partial class Info
+    {
+        public int coins_num { get; set; }
+        public int time { get; set; }
+    }
     public class CryptoCurrency
     {
         public string Id { get; set; }

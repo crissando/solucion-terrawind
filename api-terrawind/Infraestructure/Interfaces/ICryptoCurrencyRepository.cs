@@ -4,7 +4,7 @@ namespace api_terrawind.Infraestructure.Interfaces
 {
     public interface ICryptoCurrencyRepository
     {
-        Task<IEnumerable<CryptoCurrency>> GetCryptoCurrencies();
+        Task<CryptoCurrencyResponse> GetCryptoCurrencies();
     }
 }
 

@@ -17,17 +17,21 @@ namespace api_terrawind.Infraestructure.ExternalServices
             _apiUrl = configuration["ExternalServices:CryptoCurrencyApi"];
         }
 
-        public async Task<IEnumerable<CryptoCurrency>> GetCryptoCurrencies()
+        public async Task<CryptoCurrencyResponse> GetCryptoCurrencies()
         {
             var response = await _httpClient.GetStringAsync(_apiUrl);
-            var cryptoCurrencies = JsonConvert.DeserializeObject<CryptoCurrencyResponse>(response);
-            return cryptoCurrencies.Data;
+            var cryptoCurrencyResponse = JsonConvert.DeserializeObject<CryptoCurrencyResponse>(response);
+            if (cryptoCurrencyResponse == null)
+            {
+                throw new ("No se encontraron datos");
+            }
+            else
+            {
+                return cryptoCurrencyResponse;
+
+            }
         }
     }
 
-    // Clase auxiliar para deserializar la respuesta del servicio externo
-    public class CryptoCurrencyResponse
-    {
-        public List<CryptoCurrency> Data { get; set; }
-    }
+    
 }

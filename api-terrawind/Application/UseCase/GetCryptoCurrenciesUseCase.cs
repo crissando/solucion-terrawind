@@ -15,16 +15,16 @@ namespace api_terrawind.Application.UseCases
             _cryptoCurrencyRepository = cryptoCurrencyRepository;
         }
 
-        public async Task<IEnumerable<CryptoCurrency>> Execute()
+        public async Task<CryptoCurrencyResponse> Execute()
         {
             try
             {
-                var cryptoCurrencies = await _cryptoCurrencyRepository.GetCryptoCurrencies();
-                if (cryptoCurrencies == null || !cryptoCurrencies.Any())
+                var cryptoCurrencyResponse = await _cryptoCurrencyRepository.GetCryptoCurrencies();
+                if (cryptoCurrencyResponse == null || !cryptoCurrencyResponse.data.Any())
                 {
                     throw new ApplicationException("No cryptocurrencies found.");
                 }
-                return cryptoCurrencies;
+                return cryptoCurrencyResponse;
             }
             catch (Exception ex)
             {
