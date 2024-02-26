@@ -2,7 +2,8 @@
 
 ## Requisitos
 
-- Docker instalado en tu máquina local.
+- Asegúrate de tener Docker instalado en tu máquina local. Puedes verificar la instalación ejecutando el comando docker -v. Se recomienda utilizar Docker version 25.0.2
+- Asegúrate de tener Node.js instalado en tu máquina local. Puedes verificar la instalación ejecutando el comando node -v. Se recomienda utilizar Node.js version 20.11.1.
 
 # API Terrawind
 
