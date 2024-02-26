@@ -11,7 +11,7 @@ Este proyecto contiene el Docker para la API de Terrawind.
 
 ## Pasos para ejecutar el Docker API Terrawind
 
-1. Clona este repositorio en tu máquina local usando `git clone <https://github.com/crissando/solucion-terrawind.giturl_del_repositorio>`.
+1. Clona este repositorio en tu máquina local usando `git clone https://github.com/crissando/solucion-terrawind.giturl_del_repositorio`.
 
 2. Ingresa el directorio raiz `/solucion-terrawind` y crea la imagen docker `docker build -t api-terrawind -f api-terrawind\Dockerfile .`
 
