@@ -18,7 +18,7 @@ Este proyecto contiene el Docker para la API de Terrawind.
 
 4. Para validar que todo esa bien ir a la siguiente url `https://localhost:32768/api/cryptocurrency`.
 
-# API Terrawind
+# Landing Bitcoin Main
 
 Este proyecto contiene el Docker para la app landing-bitcoin-main.
 
